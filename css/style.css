@@ -1,0 +1,612 @@
+<style>
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --panel-bg: rgba(0, 0, 0, 0.45);
+    --accent: #ff6b81;
+    --muted: rgba(255, 255, 255, 0.75);
+    --card-bg: rgba(0, 0, 0, 0.3);
+    --rs-glow: #e30613;
+    --rs-red: #e30613;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    color: #fff;
+    background: #000;
+}
+
+/* Основной фон - видео */
+.bg-video-container {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+.wrap {
+    position: relative;
+    z-index: 2;
+}
+
+.bg-video-container video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    filter: brightness(0.6);
+    z-index: 1;
+}
+
+/* Затемнение поверх видео */
+.bg-video-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+    z-index: 2;
+}
+
+/* Резервный фон - картинка */
+.bg-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-image: url('bck/rska.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.6);
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+/* Класс для показа резервного фона при ошибке видео */
+.bg-fallback.active {
+    opacity: 1;
+    z-index: 3;
+}
+
+.bg-fallback::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+}
+
+.rs-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+}
+
+.rs-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: backdrop-filter 0.8s ease;
+}
+
+.rs-image {
+    width: 80px;
+    height: auto;
+    transition: 
+        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: 
+        drop-shadow(0 2px 4px rgba(48, 48, 48, 0.5))
+        brightness(1)
+        drop-shadow(0 0 0 rgba(255, 255, 255, 0))
+        drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    will-change: transform, filter;
+}
+
+.rs-logo:hover .rs-image {
+    transform: scale(1.1);
+    filter: 
+        drop-shadow(0 2px 4px rgba(48, 48, 48, 0.5))
+        brightness(1.4)
+        drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+}
+
+@media (max-width: 768px) {
+    .rs-logo {
+        top: 15px;
+        left: 15px;
+    }
+    .rs-container {
+        height: 35px;
+    }
+    .rs-image {
+        width: 65px;
+    }
+}
+
+.wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 36px 18px;
+    position: relative;
+    z-index: 2;
+}
+
+header {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+nav {
+    display: flex;
+    gap: 12px;
+    background: var(--glass-bg);
+    padding: 8px;
+    border-radius: 12px;
+    backdrop-filter: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(-15px);
+    animation: fadeInDown 1s ease 1.5s forwards;
+}
+
+/* Табуляция / вкладки */
+.tab {
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .2s ease;
+    display: inline-flex;
+    align-items: center;
+    font-size: 15px;
+    backdrop-filter: blur(4px);
+}
+
+.tab:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+}
+
+.tab.active {
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.18),
+        rgba(255,255,255,0.06)
+    );
+    color: #fff;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.18),
+        inset 0 0 18px rgba(255,255,255,0.25),
+        0 0 14px rgba(255,255,255,0.25);
+}
+
+.tab-indicator {
+    display: none !important;
+}
+
+.main-content {
+    width: 100%;
+    max-width: 1100px;
+    padding: 22px 0;
+    flex: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease 1.1s forwards;
+}
+
+.content-container {
+    position: relative;
+    min-height: 400px;
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.content.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    position: relative;
+    z-index: 100;
+}
+
+.content.exiting { opacity: 0; }
+.content.entering { opacity: 0; }
+.content.entering.active { opacity: 1; }
+
+.height-wrapper {
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 880px) {
+    .cols {
+        grid-template-columns: 1fr 380px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .wrap { padding: 50px 25px; }
+    .main-content { padding: 30px 0; }
+}
+
+@media (max-width: 768px) {
+    .wrap { padding: 20px 12px; }
+    .main-content { padding: 16px 0; }
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+    backdrop-filter: none;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #fff;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: #fff;
+}
+
+p {
+    margin: 8px 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+a.link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a.link:hover {
+    color: #ffa1b8;
+    text-decoration: underline;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.item {
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.item .title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.meta {
+    font-size: 13px;
+    color: var(--muted);
+    opacity: 0.8;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), #ffa1b8);
+    color: #111;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: transform 0.2s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.page-footer {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1100px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease 0.8s forwards;
+}
+
+.separator {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 20px;
+}
+
+footer {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* Начальное состояние */
+.bg-video-container video,
+.bg-fallback {
+    filter: blur(0px) brightness(1);
+    transition: filter 0.8s ease;
+}
+
+/* Временно убираем blur */
+.bg-video-container.unblur.bg-blur-active video,
+.bg-video-container.unblur.bg-blur-active .bg-fallback {
+    filter: blur(0px) brightness(0.9);
+}
+
+/* Активный блюр */
+.bg-blur-active video,
+.bg-blur-active .bg-fallback {
+    filter: blur(3px) brightness(0.55);
+}
+
+.main-nav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    position: relative;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* === Кнопка скачивания в стиле вкладки === */
+.download-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    border: none;
+}
+
+/* Hover — белый glow */
+.download-tab:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    box-shadow:
+        0 0 14px rgba(255,255,255,0.45),
+        inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+/* Нажата / завершена */
+.download-tab.done {
+    background: rgba(255,255,255,0.02);
+    color: rgba(255,255,255,0.6);
+    cursor: default;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Для очень маленьких телефонов (до 360px) */
+@media (max-width: 360px) {
+    .wrap { padding: 12px 8px; }
+    .rs-logo { top: 8px; left: 8px; }
+    .rs-image { width: 50px; }
+    .tab { padding: 8px 12px; font-size: 13px; }
+    h1 { font-size: 18px; }
+    .card { padding: 14px; }
+}
+
+/* Для телефонов (до 480px) */
+@media (max-width: 480px) {
+    .wrap { padding: 16px 10px; }
+    nav { gap: 6px; padding: 6px; }
+    .tab { padding: 9px 14px; font-size: 14px; }
+    .main-content { padding: 14px 0; }
+    .cols { gap: 14px; }
+}
+
+/* Для планшетов (481px - 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .wrap { padding: 24px 16px; }
+    .main-content { padding: 20px 0; }
+    .card { padding: 18px; }
+    .rs-logo { top: 20px; left: 20px; }
+}
+
+/* Для больших планшетов и маленьких ноутбуков */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cols { grid-template-columns: 1fr; max-width: 700px; margin: 0 auto; }
+}
+
+/* Для телевизоров и больших мониторов (от 1920px) */
+@media (min-width: 1920px) {
+    .wrap { padding: 60px 40px; max-width: 1600px; margin: 0 auto; }
+    nav { max-width: 500px; margin: 0 auto 40px; }
+    .tab { padding: 14px 28px; font-size: 18px; }
+    h1 { font-size: 28px; }
+    p, .meta { font-size: 16px; }
+    .item .title { font-size: 18px; }
+    .card { padding: 30px; }
+    .rs-logo { top: 40px; left: 40px; }
+    .rs-image { width: 100px; }
+}
+
+/* Для 4K/телевизоров (от 2560px) */
+@media (min-width: 2560px) {
+    .wrap { max-width: 2000px; padding: 80px 60px; }
+    h1 { font-size: 32px; }
+    .tab { font-size: 20px; padding: 16px 32px; }
+    .card { padding: 40px; }
+    .rs-image { width: 120px; }
+}
+
+/* Для ландшафтной ориентации телефонов */
+@media (max-height: 600px) and (orientation: landscape) {
+    .wrap { padding: 12px 10px; }
+    .main-content { padding: 10px 0; }
+    nav { margin-bottom: 15px; }
+    .rs-logo { top: 10px; left: 10px; }
+}
+
+/* Улучшения для тач-устройств */
+@media (hover: none) and (pointer: coarse) {
+    .tab, .download-tab { min-height: 44px; }
+}
+
+/* Улучшенная поддержка ретина-дисплеев */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card { border: 1px solid rgba(255, 255, 255, 0.08); }
+}
+
+.notification {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+}
+
+.notification-link {
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 129, 0.2), 
+        rgba(255, 255, 255, 0.08));
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.15), 
+        transparent);
+    transition: left 0.6s ease;
+}
+
+.notification-link:hover::before {
+    left: 100%;
+}
+
+.notification-text-link {
+    color: var(--accent);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.notification-text-link:hover {
+    color: #ffa1b8;
+}
+
+.notification-link-emblema img {
+    filter: brightness(1.2) drop-shadow(0 0 4px var(--rs-glow));
+}
+
+</style>

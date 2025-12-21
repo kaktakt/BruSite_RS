@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BruSite RS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/snow.css">
+    <link rel="stylesheet" href="css/notification.css">
+
+</head>
+<body>
+    <!-- Логотип -->
+    <button class="rs-logo" id="rsLogo">
+        <div class="rs-container">
+            <img src="emb/RS_logo.png" class="rs-image" alt="Logo">
+        </div>
+    </button>
+
+    <!-- Аудио -->
+    <audio id="logoSound" src="snd/rs_sound.wav" preload="auto"></audio>
+
+    <!-- Фон: видео + fallback -->
+    <div class="bg-video-container">
+        <video autoplay muted loop playsinline preload="auto" id="bgVideo">
+            <source src="bck/rs.mp4" type="video/mp4">
+        </video>
+        <div class="bg-fallback" id="bgFallback"></div>
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="wrap">
+        <header>
+            <nav class="main-nav">
+                <a class="tab active" data-tab="links">Ссылки</a>
+                <a class="tab" data-tab="config">Конфиг</a>
+                <span class="tab-indicator"></span>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <div class="height-wrapper" id="heightWrapper">
+                <div class="content-container">
+                    <!-- Секция ссылок -->
+                    <section class="cols content active" id="links" data-index="0">
+                        <div class="card">
+                            <h1>Полезные ссылки</h1>
+                            <p>Список ссылок на полезные ресурсы и инструменты.</p>
+                            <div class="list" id="linksList">
+                                <div class="item">
+                                    <div class="title"><a class="link" href="https://example.com" target="_blank" rel="noopener">Пример сайта</a></div>
+                                    <div class="meta">Короткое описание, что делает ссылка.</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title"><a class="link" href="https://github.com" target="_blank" rel="noopener">GitHub</a></div>
+                                    <div class="meta">Репозитории и проекты.</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title"><a class="link" href="https://discord.com" target="_blank" rel="noopener">Discord</a></div>
+                                    <div class="meta">Сообщество и общение.</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title"><a class="link" href="https://twitch.tv" target="_blank" rel="noopener">Twitch</a></div>
+                                    <div class="meta">Прямые трансляции и стримы.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <aside class="card">
+                            <h1>Информация</h1>
+                            <p>Краткая справка и контакты для связи.</p>
+                            <div class="list">
+                                <div class="item">
+                                    <div class="title">Сотрудничество</div>
+                                    <div class="meta">ВК: </div>
+                                    <div class="meta">Telegram: @username</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title">Тех.Поддержка</div>
+                                    <div class="meta">Telegram: @myp_official</div>
+                                </div>
+                            </div>
+                        </aside>
+                    </section>
+
+                    <!-- Секция конфигурации -->
+                    <section class="cols content" id="config" data-index="1">
+                        <div class="card">
+                            <h1>CFG by Brusnika ♥</h1>
+                            <p>Полностью настроенный конфиг от Брусники.</p>
+                            <div style="margin-top:16px;">
+                                <a class="download-tab"
+                                id="downloadConfig"
+                                href="config.zip" download>
+                                    DOWNLOAD
+                                </a>
+                            </div>
+                            <div class="meta" style="margin-top:14px; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px;">
+                                <strong>Инструкция по установке:</strong>
+                                <ol style="margin:3px 0 0 13px; padding:0;">
+                                    <li>Скачайте архив с конфигом</li>
+                                    <li>Откройте архив затем зайдите в папку Half-Life</li>
+                                    <li>Переместите папки "platform", "cstrike" в папку с игрой</li>
+                                    <li>Перезайдите в игру (если вы в игре)</li>
+                                    <li>Настройки применятся автоматически</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <aside class="card">
+                            <h1>Детали</h1>
+                            <div class="list">
+                                <div class="item">
+                                    <div class="title">Об конфиге</div>
+                                    <div class="meta">BUILD: 20D25.ms</div>
+                                    <div class="meta">Дата: 20.12.2025</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title">Форматы</div>
+                                    <div class="meta">Архив: .zip</div>
+                                    <div class="meta">Размер: ~8 KB</div>
+                                </div>
+                                <div class="item">
+                                    <div class="title">Поддержка</div>
+                                    <div class="meta">Если возникли проблемы, обратитесь в поддержку.</div>
+                                </div>
+                            </div>
+                        </aside>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <div class="separator"></div>
+            <footer id="siteFooter">BruSoft since 2023 by musichka</footer>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/snow.js"></script>
+    <script src="js/performance-manager.js"></script>
+    <script src="js/notification.js"></script>
+</body>
+</html>
