@@ -1,12 +1,11 @@
-<style>
 :root {
     --glass-bg: rgba(255, 255, 255, 0.06);
     --panel-bg: rgba(0, 0, 0, 0.45);
-    --accent: #ff6b81;
+    --accent: #ffffff;
     --muted: rgba(255, 255, 255, 0.75);
     --card-bg: rgba(0, 0, 0, 0.3);
-    --rs-glow: #e30613;
-    --rs-red: #e30613;
+    --rs-glow: #d6d6d6;
+    --rs-red: #cfcfcf;
 }
 
 * {
@@ -446,13 +445,59 @@ a.link:hover::after {
     opacity: 0.8;
 }
 
+/* Стили для контейнеров с кнопками копирования */
+.ip-container, .card-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Кнопки копирования */
+.copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.copy-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+}
+
+.copy-btn:hover .copy-icon {
+    opacity: 1;
+}
+
+/* Стили для ссылки с номером карты */
+.copy-card {
+    display: inline-block;
+    margin: 0 4px;
+    position: relative;
+}
+
 .download-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 12px 18px;
     border-radius: 10px;
-    background: linear-gradient(90deg, var(--accent), #ffa1b8);
+    background: linear-gradient(90deg, var(--accent), #ffffff);
     color: #111;
     font-weight: 700;
     border: none;
@@ -595,6 +640,11 @@ footer {
     .tab { padding: 8px 12px; font-size: 13px; }
     h1 { font-size: 18px; }
     .card { padding: 14px; }
+    .ip-container, .card-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
 }
 
 /* Для телефонов (до 480px) */
@@ -604,6 +654,11 @@ footer {
     .tab { padding: 9px 14px; font-size: 14px; }
     .main-content { padding: 14px 0; }
     .cols { gap: 14px; }
+    .ip-container, .card-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
 }
 
 /* Для планшетов (481px - 1024px) */
@@ -667,98 +722,3 @@ footer {
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     .card { border: 1px solid rgba(255, 255, 255, 0.08); }
 }
-
-.notification {
-    background: var(--card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(10px);
-}
-
-.notification-link {
-    background: linear-gradient(135deg, 
-        rgba(255, 107, 129, 0.2), 
-        rgba(255, 255, 255, 0.08));
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.notification-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255, 255, 255, 0.15), 
-        transparent);
-    transition: left 0.6s ease;
-}
-
-.notification-link:hover::before {
-    left: 100%;
-}
-
-.notification-text-link {
-    color: var(--accent);
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.notification-text-link:hover {
-    color: #be0030;
-}
-
-.notification-link-emblema img {
-    filter: brightness(1.2) drop-shadow(0 0 4px var(--rs-glow));
-}
-
-/* Убираем стандартное подчеркивание у всех ссылок при наведении */
-a:hover {
-    text-decoration: none !important;
-}
-
-/* Особый стиль для ссылок в списке инструкций (если есть) */
-.content ol li a.link {
-    color: var(--accent);
-    transition: all 0.3s ease;
-}
-
-.content ol li a.link:hover {
-    color: #ffffff;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-}
-
-/* Для слабых устройств и режима производительности */
-.performance-mode a.link {
-    transition: color 0.3s ease !important;
-    animation: none !important;
-}
-
-.performance-mode a.link:hover {
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5) !important;
-}
-
-/* Плавное появление свечения при наведении */
-a.link, .meta a.link {
-    transition: 
-        color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        text-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Плавное исчезновение свечения при уходе курсора */
-a.link, .meta a.link {
-    transition: 
-        color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        text-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-
-
-</style>

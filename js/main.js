@@ -1,4 +1,4 @@
-// main.js - оптимизированная версия
+// main.js - оптимизированная версия с поддержкой 4 вкладок
 (function() {
     'use strict';
     
@@ -197,7 +197,7 @@
                     }
                     this.isAnimating = false;
                 }, 150);
-            }, 300);
+            });
         }
         
         updateContainerHeight(target) {
@@ -218,27 +218,78 @@
         }
         
         handleKeyPress(e) {
-            if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+            if (!['ArrowLeft', 'ArrowRight', '1', '2', '3', '4'].includes(e.key)) return;
             
-            const activeIndex = [...this.tabs].findIndex(t => t.classList.contains('active'));
-            let nextIndex = activeIndex;
+            // Цифровые клавиши для быстрого переключения
+            const keyMap = {
+                '1': 0, // Ссылки
+                '2': 1, // Конфиг
+                '3': 2, // Проект
+                '4': 3  // Донат
+            };
             
-            if (e.key === 'ArrowRight') nextIndex++;
-            if (e.key === 'ArrowLeft') nextIndex--;
+            let nextIndex;
             
-            if (nextIndex < 0) nextIndex = this.tabs.length - 1;
-            if (nextIndex >= this.tabs.length) nextIndex = 0;
+            if (keyMap[e.key] !== undefined) {
+                nextIndex = keyMap[e.key];
+            } else {
+                // Стрелки для переключения
+                const activeIndex = [...this.tabs].findIndex(t => t.classList.contains('active'));
+                
+                if (e.key === 'ArrowRight') nextIndex = activeIndex + 1;
+                if (e.key === 'ArrowLeft') nextIndex = activeIndex - 1;
+                
+                // Циклическое переключение
+                if (nextIndex < 0) nextIndex = this.tabs.length - 1;
+                if (nextIndex >= this.tabs.length) nextIndex = 0;
+            }
             
-            this.tabs[nextIndex].click();
+            // Проверяем, что индекс в пределах массива
+            if (nextIndex >= 0 && nextIndex < this.tabs.length) {
+                this.tabs[nextIndex].click();
+            }
         }
     }
     
-    // Логотип
+    // Логотип с обработкой двойного клика для открытия ссылки
     function initLogo() {
         const rsLogo = document.getElementById('rsLogo');
         const logoSound = document.getElementById('logoSound');
         
         if (!rsLogo) return;
+        
+        let clickCount = 0;
+        let clickTimer = null;
+        
+        rsLogo.addEventListener('click', function(e) {
+            e.preventDefault();
+            clickCount++;
+            
+            if (clickCount === 1) {
+                // Одиночный клик - прокрутка наверх и звук
+                clickTimer = setTimeout(function() {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    if (logoSound) {
+                        logoSound.currentTime = 0;
+                        logoSound.play().catch(() => {
+                            // Игнорируем ошибки воспроизведения звука
+                        });
+                    }
+                    clickCount = 0;
+                }, 300);
+            } else if (clickCount === 2) {
+                // Двойной клик - открываем ссылку
+                clearTimeout(clickTimer);
+                window.open('https://t.me/brusnikaone/4700', '_blank', 'noopener,noreferrer');
+                clickCount = 0;
+            }
+        });
+        
+        // Отключаем стандартное поведение двойного клика
+        rsLogo.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        });
     }
     
     // Кнопка скачивания
@@ -277,6 +328,163 @@
         }, 300);
     }
     
+    // Функция для копирования текста в буфер обмена
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            // Используем старый метод, если navigator.clipboard недоступен
+            let textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((resolve, reject) => {
+                document.execCommand('copy') ? resolve() : reject();
+                textArea.remove();
+            });
+        }
+    }
+    
+    // Копирование команды connect для IP сервера
+    function initIPCopy() {
+        const copyIpBtn = document.querySelector('.copy-ip');
+        if (!copyIpBtn) return;
+
+        copyIpBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const ip = '194.93.2.151:27015';
+            const command = `connect ${ip}`;
+            
+            copyToClipboard(command).then(() => {
+                // Визуальная обратная связь
+                const originalHTML = this.innerHTML;
+                this.innerHTML = `
+                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                this.style.color = '#4CAF50';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                    this.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+                alert('Не удалось скопировать команду. Скопируйте вручную: ' + command);
+            });
+        });
+    }
+    
+    // Копирование номера карты
+    function initCardCopy() {
+        const copyCardLink = document.querySelector('.copy-card');
+        const copyCardBtn = document.querySelector('.copy-card-btn');
+        
+        if (!copyCardLink || !copyCardBtn) return;
+
+        // Функция для копирования карты
+        const copyCard = (e) => {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const cardNumber = copyCardLink.getAttribute('data-card');
+            
+            // На мобильных устройствах пытаемся открыть банковское приложение
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Пробуем разные схемы для популярных банковских приложений
+                const bankSchemes = [
+                    `bank100000000000://transfer?card=${cardNumber}`,
+                    `sberbank://transfer?card=${cardNumber}`,
+                    `tinkoff://transfer?card=${cardNumber}`,
+                    `alfabank://transfer?card=${cardNumber}`,
+                    `vtb://transfer?card=${cardNumber}`
+                ];
+                
+                let appOpened = false;
+                for (const scheme of bankSchemes) {
+                    try {
+                        window.location.href = scheme;
+                        appOpened = true;
+                        setTimeout(() => {
+                            if (document.hidden) {
+                                // Приложение открылось, выходим
+                                return;
+                            }
+                        }, 100);
+                        break;
+                    } catch (e) {
+                        // Продолжаем пробовать следующую схему
+                    }
+                }
+                
+                // Если не удалось открыть приложение, просто копируем
+                setTimeout(() => {
+                    if (!appOpened || !document.hidden) {
+                        copyToClipboard(cardNumber).then(() => {
+                            // Визуальная обратная связь для кнопки
+                            const originalHTML = copyCardBtn.innerHTML;
+                            copyCardBtn.innerHTML = `
+                                <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            `;
+                            copyCardBtn.style.color = '#00ff08ff';
+                            
+                            setTimeout(() => {
+                                copyCardBtn.innerHTML = originalHTML;
+                                copyCardBtn.style.color = '';
+                            }, 2000);
+                        }).catch(() => {
+                            alert('Номер карты: ' + cardNumber);
+                        });
+                    }
+                }, 300);
+            } else {
+                // На десктопе просто копируем
+                copyToClipboard(cardNumber).then(() => {
+                    // Визуальная обратная связь для кнопки
+                    const originalHTML = copyCardBtn.innerHTML;
+                    copyCardBtn.innerHTML = `
+                        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    `;
+                    copyCardBtn.style.color = '#00ff08ff';
+                    
+                    setTimeout(() => {
+                        copyCardBtn.innerHTML = originalHTML;
+                        copyCardBtn.style.color = '';
+                    }, 2000);
+                }).catch(() => {
+                    alert('Номер карты: ' + cardNumber);
+                });
+            }
+        };
+
+        // Обработчик для кнопки копирования
+        copyCardBtn.addEventListener('click', copyCard);
+
+        // Обработчик для самой ссылки с номером карты
+        copyCardLink.addEventListener('click', copyCard);
+    }
+    
+    // Инициализация кнопок копирования
+    function initCopyButtons() {
+        initIPCopy();
+        initCardCopy();
+    }
+    
     // Инициализация всего при загрузке DOM
     document.addEventListener('DOMContentLoaded', () => {
         // Запускаем обработку фона
@@ -293,44 +501,13 @@
         
         // Инициализируем блюр фона
         initBackgroundBlur();
-
-        // Инициализируем систему уведомлений
-        initNotificationSystem();
-        if (!window.NotificationManager) {
-            console.log('Notification system not loaded');
-    }
         
-        console.log('Main script initialized successfully');
+        // Инициализируем кнопки копирования
+        initCopyButtons();
+        
+        console.log('Main script initialized successfully with 4 tabs');
     });
     
     // Экспортируем утилиты
     window.utils = utils;
-
-function initNotificationSystem() {
-    // Проверяем, загружен ли уже notification.js
-    if (!window.NotificationManager) {
-        console.warn('NotificationManager not available. Loading notification module...');
-        
-        // Создаем элемент для загрузки CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'css/notification.css';
-        document.head.appendChild(link);
-        
-        // Создаем элемент для загрузки JS
-        const script = document.createElement('script');
-        script.src = 'js/notification.js';
-        script.onload = function() {
-            console.log('Notification module loaded successfully');
-            window.notificationManager = new window.NotificationManager();
-        };
-        script.onerror = function() {
-            console.error('Failed to load notification module');
-        };
-        document.head.appendChild(script);
-    } else {
-        // Если уже доступен, инициализируем
-        window.notificationManager = new window.NotificationManager();
-    }
-}
 })();
