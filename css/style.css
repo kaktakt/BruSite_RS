@@ -1,11 +1,11 @@
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.06);
-    --panel-bg: rgba(0, 0, 0, 0.45);
-    --accent: #ffffff;
-    --muted: rgba(255, 255, 255, 0.75);
-    --card-bg: rgba(0, 0, 0, 0.3);
-    --rs-glow: #d6d6d6;
-    --rs-red: #cfcfcf;
+    --glass-bg: rgba(255, 255, 255, 0.09);
+    --panel-bg: rgba(0, 0, 0, 0.35);
+    --accent: #f0f0f0;
+    --muted: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(0, 0, 0, 0.25);
+    --rs-glow: #dddddd;
+    --rs-red: #dedede;
 }
 
 * {
@@ -42,7 +42,7 @@ html, body {
     height: auto;
     transform: translate(-50%, -50%);
     object-fit: cover;
-    filter: brightness(0.6);
+    filter: brightness(2);
     z-index: 1;
 }
 
@@ -54,7 +54,7 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
     z-index: 2;
 }
 
@@ -70,7 +70,7 @@ html, body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: brightness(0.6);
+    filter: brightness(0.7);
     z-index: 0;
     opacity: 0;
     transition: opacity 0.8s ease;
@@ -89,7 +89,7 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
 }
 
 .rs-logo {
@@ -104,7 +104,7 @@ html, body {
     border: none;
     padding: 0;
     opacity: 0;
-    animation: fadeIn 1s ease 1.5s forwards;
+    animation: fadeIn 1s ease 1.1s forwards;
 }
 
 .rs-container {
@@ -114,7 +114,7 @@ html, body {
     height: 45px;
     padding: 4px 8px;
     border-radius: 8px;
-    transition: backdrop-filter 0.8s ease;
+    transition: backdrop-filter 0.6s ease;
 }
 
 .rs-image {
@@ -177,45 +177,45 @@ nav {
     background: var(--glass-bg);
     padding: 8px;
     border-radius: 12px;
-    backdrop-filter: none;
+    backdrop-filter: blur(8px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     opacity: 0;
     transform: translateY(-15px);
-    animation: fadeInDown 1s ease 1.5s forwards;
+    animation: fadeInDown 1s ease 1.2s forwards;
 }
 
 /* Табуляция / вкладки */
 .tab {
     padding: 10px 18px;
     border-radius: 10px;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.08);
     color: var(--muted);
     cursor: pointer;
     font-weight: 600;
     text-decoration: none;
-    transition: all .2s ease;
+    transition: all 1.1s ease;
     display: inline-flex;
     align-items: center;
     font-size: 15px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
 }
 
 .tab:hover {
     color: #fff;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
 }
 
 .tab.active {
     background: linear-gradient(
         180deg,
-        rgba(255,255,255,0.18),
-        rgba(255,255,255,0.06)
+        rgba(255,255,255,0.22),
+        rgba(255,255,255,0.08)
     );
     color: #fff;
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.18),
-        inset 0 0 18px rgba(255,255,255,0.25),
-        0 0 14px rgba(255,255,255,0.25);
+        inset 0 0 0 1px rgba(255,255,255,0.22),
+        inset 0 0 20px rgba(255,255,255,0.3),
+        0 0 16px rgba(255,255,255,0.3);
 }
 
 .tab-indicator {
@@ -289,10 +289,10 @@ nav {
 }
 
 .card {
-    background: var(--card-bg);
+    background: rgba(0, 0, 0, 0.25);
     padding: 20px;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
     backdrop-filter: none;
 }
 
@@ -334,6 +334,30 @@ a.link:hover {
     transform: translateY(-1px);
 }
 
+/* Специальные стили для IP-ссылки */
+a.link.ip-link {
+    font-weight: 600;
+    font-size: 15px;
+    color: #f8f8f8 !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+a.link.ip-link:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    text-shadow: 
+        0 0 12px rgba(255, 255, 255, 1),
+        0 0 24px rgba(255, 255, 255, 0.8),
+        0 0 36px rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px) scale(1.05);
+}
+
 /* Анимация свечения */
 @keyframes linkGlow {
     0% {
@@ -359,7 +383,7 @@ a.link:hover {
 /* Добавляем анимацию пульсации свечения */
 a.link:hover {
     animation: linkGlow 2s ease-in-out infinite;
-    animation-delay: 0.2s; /* Задержка перед началом анимации */
+    animation-delay: 0.2s;
 }
 
 /* Плавная линия при наведении */
@@ -429,8 +453,8 @@ a.link:hover::after {
 .item {
     padding: 14px;
     border-radius: 10px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .item .title {
@@ -445,59 +469,13 @@ a.link:hover::after {
     opacity: 0.8;
 }
 
-/* Стили для контейнеров с кнопками копирования */
-.ip-container, .card-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-/* Кнопки копирования */
-.copy-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 4px 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.copy-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-
-.copy-icon {
-    width: 14px;
-    height: 14px;
-    opacity: 0.8;
-}
-
-.copy-btn:hover .copy-icon {
-    opacity: 1;
-}
-
-/* Стили для ссылки с номером карты */
-.copy-card {
-    display: inline-block;
-    margin: 0 4px;
-    position: relative;
-}
-
 .download-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     padding: 12px 18px;
     border-radius: 10px;
-    background: linear-gradient(90deg, var(--accent), #ffffff);
+    background: linear-gradient(90deg, var(--accent), #ffa1b8);
     color: #111;
     font-weight: 700;
     border: none;
@@ -544,13 +522,13 @@ footer {
 /* Временно убираем blur */
 .bg-video-container.unblur.bg-blur-active video,
 .bg-video-container.unblur.bg-blur-active .bg-fallback {
-    filter: blur(0px) brightness(0.9);
+    filter: blur(0px) brightness(0.95);
 }
 
 /* Активный блюр */
 .bg-blur-active video,
 .bg-blur-active .bg-fallback {
-    filter: blur(3px) brightness(0.55);
+    filter: blur(3px) brightness(0.65);
 }
 
 .main-nav {
@@ -571,24 +549,24 @@ footer {
     justify-content: center;
     padding: 10px 18px;
     border-radius: 10px;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.08);
     color: var(--muted);
     font-weight: 600;
     font-size: 15px;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.25s ease;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
     border: none;
 }
 
 /* Hover — белый glow */
 .download-tab:hover {
     color: #fff;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.14);
     box-shadow:
-        0 0 14px rgba(255,255,255,0.45),
-        inset 0 0 0 1px rgba(255,255,255,0.12);
+        0 0 16px rgba(255,255,255,0.5),
+        inset 0 0 0 1px rgba(255,255,255,0.16);
 }
 
 /* Нажата / завершена */
@@ -640,11 +618,6 @@ footer {
     .tab { padding: 8px 12px; font-size: 13px; }
     h1 { font-size: 18px; }
     .card { padding: 14px; }
-    .ip-container, .card-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
 }
 
 /* Для телефонов (до 480px) */
@@ -654,11 +627,6 @@ footer {
     .tab { padding: 9px 14px; font-size: 14px; }
     .main-content { padding: 14px 0; }
     .cols { gap: 14px; }
-    .ip-container, .card-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
 }
 
 /* Для планшетов (481px - 1024px) */
@@ -708,10 +676,11 @@ footer {
 @media (hover: none) and (pointer: coarse) {
     .tab, .download-tab { min-height: 44px; }
     /* Упрощаем эффекты для ссылок на тач-устройствах */
-    a.link:hover, .meta a.link:hover {
+    a.link:hover, .meta a.link:hover, a.link.ip-link:hover {
         animation: none !important;
         text-shadow: 0 0 8px rgba(255, 255, 255, 0.5) !important;
-        transform: none;
+        transform: none !important;
+        box-shadow: none !important;
     }
     a.link:hover::after {
         transform: scaleX(0);
@@ -720,5 +689,132 @@ footer {
 
 /* Улучшенная поддержка ретина-дисплеев */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .card { border: 1px solid rgba(255, 255, 255, 0.08); }
+    .card { border: 1px solid rgba(255, 255, 255, 0.1); }
+}
+
+/* Для слабых устройств - светлее фон */
+@media (max-width: 768px) {
+    .bg-fallback {
+        filter: brightness(0.8) !important;
+    }
+}
+
+
+.copy-card {
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: 600;
+}
+
+.copy-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.copy-card::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.8), 
+        transparent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.copy-card:hover::after {
+    transform: scaleX(1);
+}
+
+/* Уведомление о копировании */
+.copy-notification {
+    display: none;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .copy-card {
+        padding: 4px 8px;
+        margin-left: 8px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .copy-card::before {
+        content: '📋';
+        margin-right: 5px;
+        font-size: 14px;
+    }
+    
+    .copy-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Анимация для уведомления */
+@keyframes copyPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.copy-card:active {
+    animation: copyPulse 0.3s ease;
+}
+
+/* Для десктопов - добавляем подсказку */
+@media (min-width: 769px) {
+    .copy-card {
+        position: relative;
+    }
+    
+    .copy-card:hover::before {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        margin-bottom: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 100;
+    }
 }
