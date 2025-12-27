@@ -187,16 +187,12 @@
                                 </div>
                                 <div class="item">
                                     <div class="title">IP Сервера</div>
-                                    <div class="meta ip-container">
-                                        <a class="link ip-connect" href="steam://connect/194.93.2.151:27015" target="_blank" rel="noopener">
-                                            194.93.2.151:27015
-                                        </a>
-                                        <button class="copy-btn copy-ip" title="Скопировать команду connect">
-                                            <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                            </svg>
-                                        </button>
+                                    <div class="meta">
+                                        <a class="link ip-link" 
+                                        href="steam://connect/194.93.2.151:27015" 
+                                        target="_blank" 
+                                        rel="noopener"
+                                        title="Подключиться к серверу">194.93.2.151:27015</a>
                                     </div>
                                 </div>
                                 <div class="item">
@@ -228,18 +224,15 @@
                                     <div class="meta">Валюты: RUB, USD, EUR, UAH, USDT</div>
                                 </div>
                                 <div class="item">
-                                    <div class="title"><a target="_blank" rel="noopener">Переводом по номеру карты (в любое время)</a></div>
-                                    <div class="meta card-container">
+                                    <div class="title">Переводом по номеру карты (в любое время)</div>
+                                    <div class="meta">
                                         SBERBANK: 
-                                        <a class="link copy-card" href="#" data-card="4276160305781800">
+                                        <a href="#" class="link copy-card" 
+                                        data-card="4276160305781800" 
+                                        data-sberbank="sberbank://">
                                             4276160305781800
                                         </a>
-                                        <button class="copy-btn copy-card-btn" title="Скопировать номер карты">
-                                            <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                            </svg>
-                                        </button>
+                                        <span class="copy-notification" id="copyNotification">Скопировано!</span>
                                     </div>
                                 </div>
                             </div>

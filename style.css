@@ -1,0 +1,821 @@
+
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.09);
+    --panel-bg: rgba(0, 0, 0, 0.35);
+    --accent: #f0f0f0;
+    --muted: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(0, 0, 0, 0.25);
+    --rs-glow: #dddddd;
+    --rs-red: #dedede;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    color: #fff;
+    background: #000;
+}
+
+/* Основной фон - видео */
+.bg-video-container {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+.wrap {
+    position: relative;
+    z-index: 2;
+}
+
+.bg-video-container video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    filter: brightness(2);
+    z-index: 1;
+}
+
+/* Затемнение поверх видео */
+.bg-video-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
+    z-index: 2;
+}
+
+/* Резервный фон - картинка */
+.bg-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-image: url('bck/rska.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.7);
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+/* Класс для показа резервного фона при ошибке видео */
+.bg-fallback.active {
+    opacity: 1;
+    z-index: 3;
+}
+
+.bg-fallback::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
+}
+
+.rs-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.1s forwards;
+}
+
+.rs-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: backdrop-filter 0.6s ease;
+}
+
+.rs-image {
+    width: 80px;
+    height: auto;
+    transition: 
+        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: 
+        drop-shadow(0 2px 4px rgba(48, 48, 48, 0.5))
+        brightness(1)
+        drop-shadow(0 0 0 rgba(255, 255, 255, 0))
+        drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    will-change: transform, filter;
+}
+
+.rs-logo:hover .rs-image {
+    transform: scale(1.1);
+    filter: 
+        drop-shadow(0 2px 4px rgba(48, 48, 48, 0.5))
+        brightness(1.4)
+        drop-shadow(0 0 6px rgba(255, 255, 255, 0.6))
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+}
+
+@media (max-width: 768px) {
+    .rs-logo {
+        top: 15px;
+        left: 15px;
+    }
+    .rs-container {
+        height: 35px;
+    }
+    .rs-image {
+        width: 65px;
+    }
+}
+
+.wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 36px 18px;
+    position: relative;
+    z-index: 2;
+}
+
+header {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+nav {
+    display: flex;
+    gap: 12px;
+    background: var(--glass-bg);
+    padding: 8px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(-15px);
+    animation: fadeInDown 1s ease 1.2s forwards;
+}
+
+/* Табуляция / вкладки */
+.tab {
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 1.1s ease;
+    display: inline-flex;
+    align-items: center;
+    font-size: 15px;
+    backdrop-filter: blur(6px);
+}
+
+.tab:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+}
+
+.tab.active {
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.22),
+        rgba(255,255,255,0.08)
+    );
+    color: #fff;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.22),
+        inset 0 0 20px rgba(255,255,255,0.3),
+        0 0 16px rgba(255,255,255,0.3);
+}
+
+.tab-indicator {
+    display: none !important;
+}
+
+.main-content {
+    width: 100%;
+    max-width: 1100px;
+    padding: 22px 0;
+    flex: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease 1.1s forwards;
+}
+
+.content-container {
+    position: relative;
+    min-height: 400px;
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.content.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    position: relative;
+    z-index: 100;
+}
+
+.content.exiting { opacity: 0; }
+.content.entering { opacity: 0; }
+.content.entering.active { opacity: 1; }
+
+.height-wrapper {
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 880px) {
+    .cols {
+        grid-template-columns: 1fr 380px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .wrap { padding: 50px 25px; }
+    .main-content { padding: 30px 0; }
+}
+
+@media (max-width: 768px) {
+    .wrap { padding: 20px 12px; }
+    .main-content { padding: 16px 0; }
+}
+
+.card {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: none;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #fff;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: #fff;
+}
+
+p {
+    margin: 8px 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Улучшенные стили для ссылок */
+a.link {
+    color: var(--accent) !important;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: inline-block;
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    will-change: color, text-shadow, transform;
+}
+
+/* Эффект при наведении для ВСЕХ ссылок .link */
+a.link:hover {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.9),
+        0 0 20px rgba(255, 255, 255, 0.7),
+        0 0 30px rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Специальные стили для IP-ссылки */
+a.link.ip-link {
+    font-weight: 600;
+    font-size: 15px;
+    color: #f8f8f8 !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+a.link.ip-link:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    text-shadow: 
+        0 0 12px rgba(255, 255, 255, 1),
+        0 0 24px rgba(255, 255, 255, 0.8),
+        0 0 36px rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* Анимация свечения */
+@keyframes linkGlow {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.9),
+            0 0 20px rgba(255, 255, 255, 0.7),
+            0 0 30px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(255, 255, 255, 1),
+            0 0 25px rgba(255, 255, 255, 0.9),
+            0 0 35px rgba(255, 255, 255, 0.7);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.9),
+            0 0 20px rgba(255, 255, 255, 0.7),
+            0 0 30px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Добавляем анимацию пульсации свечения */
+a.link:hover {
+    animation: linkGlow 2s ease-in-out infinite;
+    animation-delay: 0.2s;
+}
+
+/* Плавная линия при наведении */
+a.link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.8), 
+        transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a.link:hover::after {
+    transform: scaleX(1);
+}
+
+/* Для ссылок внутри .item */
+.item .title a.link {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+.item a.link:hover {
+    animation: linkGlow 1.8s ease-in-out infinite;
+    animation-delay: 0.2s;
+}
+
+/* Для ссылок в мета-информации */
+.meta a.link {
+    font-size: 13px;
+    color: var(--accent) !important;
+    opacity: 0.9;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none !important;
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+}
+
+.meta a.link:hover {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: 
+        0 0 8px rgba(255, 255, 255, 0.9),
+        0 0 16px rgba(255, 255, 255, 0.7),
+        0 0 24px rgba(255, 255, 255, 0.5);
+    text-decoration: none !important;
+    transform: translateY(-1px);
+    animation: linkGlow 2.2s ease-in-out infinite;
+    animation-delay: 0.2s;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.item {
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.item .title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.meta {
+    font-size: 13px;
+    color: var(--muted);
+    opacity: 0.8;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), #ffa1b8);
+    color: #111;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: transform 0.2s ease;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.page-footer {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1100px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease 0.8s forwards;
+}
+
+.separator {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 20px;
+}
+
+footer {
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* Начальное состояние */
+.bg-video-container video,
+.bg-fallback {
+    filter: blur(0px) brightness(1);
+    transition: filter 0.8s ease;
+}
+
+/* Временно убираем blur */
+.bg-video-container.unblur.bg-blur-active video,
+.bg-video-container.unblur.bg-blur-active .bg-fallback {
+    filter: blur(0px) brightness(0.95);
+}
+
+/* Активный блюр */
+.bg-blur-active video,
+.bg-blur-active .bg-fallback {
+    filter: blur(3px) brightness(0.65);
+}
+
+.main-nav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    position: relative;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* === Кнопка скачивания в стиле вкладки === */
+.download-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(6px);
+    border: none;
+}
+
+/* Hover — белый glow */
+.download-tab:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.14);
+    box-shadow:
+        0 0 16px rgba(255,255,255,0.5),
+        inset 0 0 0 1px rgba(255,255,255,0.16);
+}
+
+/* Нажата / завершена */
+.download-tab.done {
+    background: rgba(255,255,255,0.02);
+    color: rgba(255,255,255,0.6);
+    cursor: default;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Для очень маленьких телефонов (до 360px) */
+@media (max-width: 360px) {
+    .wrap { padding: 12px 8px; }
+    .rs-logo { top: 8px; left: 8px; }
+    .rs-image { width: 50px; }
+    .tab { padding: 8px 12px; font-size: 13px; }
+    h1 { font-size: 18px; }
+    .card { padding: 14px; }
+}
+
+/* Для телефонов (до 480px) */
+@media (max-width: 480px) {
+    .wrap { padding: 16px 10px; }
+    nav { gap: 6px; padding: 6px; }
+    .tab { padding: 9px 14px; font-size: 14px; }
+    .main-content { padding: 14px 0; }
+    .cols { gap: 14px; }
+}
+
+/* Для планшетов (481px - 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .wrap { padding: 24px 16px; }
+    .main-content { padding: 20px 0; }
+    .card { padding: 18px; }
+    .rs-logo { top: 20px; left: 20px; }
+}
+
+/* Для больших планшетов и маленьких ноутбуков */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cols { grid-template-columns: 1fr; max-width: 700px; margin: 0 auto; }
+}
+
+/* Для телевизоров и больших мониторов (от 1920px) */
+@media (min-width: 1920px) {
+    .wrap { padding: 60px 40px; max-width: 1600px; margin: 0 auto; }
+    nav { max-width: 500px; margin: 0 auto 40px; }
+    .tab { padding: 14px 28px; font-size: 18px; }
+    h1 { font-size: 28px; }
+    p, .meta { font-size: 16px; }
+    .item .title { font-size: 18px; }
+    .card { padding: 30px; }
+    .rs-logo { top: 40px; left: 40px; }
+    .rs-image { width: 100px; }
+}
+
+/* Для 4K/телевизоров (от 2560px) */
+@media (min-width: 2560px) {
+    .wrap { max-width: 2000px; padding: 80px 60px; }
+    h1 { font-size: 32px; }
+    .tab { font-size: 20px; padding: 16px 32px; }
+    .card { padding: 40px; }
+    .rs-image { width: 120px; }
+}
+
+/* Для ландшафтной ориентации телефонов */
+@media (max-height: 600px) and (orientation: landscape) {
+    .wrap { padding: 12px 10px; }
+    .main-content { padding: 10px 0; }
+    nav { margin-bottom: 15px; }
+    .rs-logo { top: 10px; left: 10px; }
+}
+
+/* Улучшения для тач-устройств */
+@media (hover: none) and (pointer: coarse) {
+    .tab, .download-tab { min-height: 44px; }
+    /* Упрощаем эффекты для ссылок на тач-устройствах */
+    a.link:hover, .meta a.link:hover, a.link.ip-link:hover {
+        animation: none !important;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5) !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    a.link:hover::after {
+        transform: scaleX(0);
+    }
+}
+
+/* Улучшенная поддержка ретина-дисплеев */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card { border: 1px solid rgba(255, 255, 255, 0.1); }
+}
+
+/* Для слабых устройств - светлее фон */
+@media (max-width: 768px) {
+    .bg-fallback {
+        filter: brightness(0.8) !important;
+    }
+}
+
+
+.copy-card {
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: 600;
+}
+
+.copy-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.copy-card::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.8), 
+        transparent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.copy-card:hover::after {
+    transform: scaleX(1);
+}
+
+/* Уведомление о копировании */
+.copy-notification {
+    display: none;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .copy-card {
+        padding: 4px 8px;
+        margin-left: 8px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .copy-card::before {
+        content: '📋';
+        margin-right: 5px;
+        font-size: 14px;
+    }
+    
+    .copy-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Анимация для уведомления */
+@keyframes copyPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.copy-card:active {
+    animation: copyPulse 0.3s ease;
+}
+
+/* Для десктопов - добавляем подсказку */
+@media (min-width: 769px) {
+    .copy-card {
+        position: relative;
+    }
+    
+    .copy-card:hover::before {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        margin-bottom: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 100;
+    }
+}
