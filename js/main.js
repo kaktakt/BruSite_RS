@@ -1,4 +1,4 @@
-// main.js - оптимизированная версия с поддержкой 4 вкладок
+// main.js - оптимизированная версия с плавными переходами между вкладками (1.2 секунды)
 (function() {
     'use strict';
     
@@ -125,7 +125,7 @@
         });
     }
     
-    // Вкладки
+    // Вкладки с улучшенными анимациями (1.2 секунды)
     class TabManager {
         constructor() {
             this.tabs = document.querySelectorAll('.tab');
@@ -168,52 +168,59 @@
         }
         
         animateTransition(current, target, tab) {
-            // Временно убираем blur фона
+            // Временно убираем blur фона для более плавного перехода
             if (this.bgContainer) {
                 this.bgContainer.classList.add('unblur');
             }
             
-            // Анимация высоты контейнера
+            // Обновляем высоту контейнера перед началом анимации
             this.updateContainerHeight(target);
             
-            // Анимация перехода контента
+            // Обновляем активную вкладку сразу для лучшей обратной связи
+            this.tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Убираем текущую вкладку с анимацией затемнения
             current.classList.remove('active');
             current.classList.add('exiting');
-            target.classList.add('entering');
             
+            // Задержка перед появлением новой вкладки для создания эффекта последовательности
             setTimeout(() => {
-                current.classList.remove('exiting');
-                target.classList.remove('entering');
-                target.classList.add('active');
+                target.classList.add('entering');
                 
-                // Обновляем активную вкладку
-                this.tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Восстанавливаем blur фона
+                // После небольшой задержки активируем новую вкладку
                 setTimeout(() => {
-                    if (this.bgContainer) {
-                        this.bgContainer.classList.remove('unblur');
-                    }
-                    this.isAnimating = false;
-                }, 150);
-            });
+                    target.classList.remove('entering');
+                    target.classList.add('active');
+                    current.classList.remove('exiting');
+                    
+                    // Восстанавливаем blur фона
+                    setTimeout(() => {
+                        if (this.bgContainer) {
+                            this.bgContainer.classList.remove('unblur');
+                        }
+                        this.isAnimating = false;
+                    }, 200);
+                }, 50);
+            }, 600); // Увеличена задержка до 600ms для 1.2s анимации
         }
         
         updateContainerHeight(target) {
             if (!this.heightWrapper) return;
             
             const currentHeight = this.heightWrapper.scrollHeight;
-            const targetHeight = target.scrollHeight;
+            const targetHeight = target.scrollHeight + 20; // Добавляем небольшой отступ
             
             this.heightWrapper.style.height = currentHeight + 'px';
             
+            // Используем requestAnimationFrame для плавной анимации
             requestAnimationFrame(() => {
                 this.heightWrapper.style.height = targetHeight + 'px';
                 
+                // После завершения анимации устанавливаем auto
                 setTimeout(() => {
                     this.heightWrapper.style.height = 'auto';
-                }, 600);
+                }, 1200); // Увеличено до 1200ms
             });
         }
         
@@ -439,7 +446,7 @@
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             `;
-                            copyCardBtn.style.color = '#00ff08ff';
+                            copyCardBtn.style.color = '#4CAF50';
                             
                             setTimeout(() => {
                                 copyCardBtn.innerHTML = originalHTML;
@@ -460,7 +467,7 @@
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                     `;
-                    copyCardBtn.style.color = '#00ff08ff';
+                    copyCardBtn.style.color = '#4CAF50';
                     
                     setTimeout(() => {
                         copyCardBtn.innerHTML = originalHTML;
@@ -505,9 +512,228 @@
         // Инициализируем кнопки копирования
         initCopyButtons();
         
-        console.log('Main script initialized successfully with 4 tabs');
+        console.log('Main script initialized successfully with 1.2s smooth tab transitions');
     });
     
     // Экспортируем утилиты
     window.utils = utils;
+
+// Функции для подключения к серверу CS 1.6
+function connectToServer(e) {
+    e.preventDefault();
+    const connectBtn = e.target;
+    const originalText = connectBtn.textContent;
+    
+    // Изменяем текст кнопки
+    connectBtn.textContent = 'Подключение...';
+    connectBtn.style.opacity = '0.7';
+    connectBtn.style.cursor = 'wait';
+    
+    // Пытаемся открыть ссылку steam://
+    const steamUrl = connectBtn.href;
+    
+    // Создаем временную ссылку для открытия протокола
+    const tempLink = document.createElement('a');
+    tempLink.href = steamUrl;
+    tempLink.style.display = 'none';
+    document.body.appendChild(tempLink);
+    
+    // Пытаемся открыть ссылку
+    tempLink.click();
+    
+    // Удаляем временную ссылку
+    setTimeout(() => {
+        document.body.removeChild(tempLink);
+    }, 100);
+    
+    // Проверяем, было ли открытие успешным
+    setTimeout(() => {
+        // Показываем инструкцию через 2 секунды (на случай если не открылось)
+        showConnectionModal();
+        
+        // Восстанавливаем кнопку через 3 секунды
+        setTimeout(() => {
+            connectBtn.textContent = originalText;
+            connectBtn.style.opacity = '1';
+            connectBtn.style.cursor = 'pointer';
+        }, 3000);
+    }, 2000);
+}
+
+// Функция показа модального окна с инструкцией
+function showConnectionModal() {
+    const modal = document.getElementById('connectionModal');
+    if (modal) {
+        modal.classList.add('active');
+        
+        // Автоматическое закрытие через 15 секунд
+        setTimeout(() => {
+            closeModal();
+        }, 15000);
+    }
+}
+
+// Функция закрытия модального окна
+function closeModal() {
+    const modal = document.getElementById('connectionModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Функция копирования команды подключения
+function copyConnectCommand() {
+    const command = 'connect 194.93.2.151:27015';
+    
+    // Используем Clipboard API если доступен
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(command).then(() => {
+            alert('Команда скопирована в буфер обмена! Вставьте её в консоль CS 1.6.');
+            closeModal();
+        }).catch(err => {
+            fallbackCopyText(command);
+        });
+    } else {
+        fallbackCopyText(command);
+    }
+}
+
+// Фолбэк метод копирования для старых браузеров
+function fallbackCopyText(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        alert('Команда скопирована в буфер обмена! Вставьте её в консоль CS 1.6.');
+        closeModal();
+    } catch (err) {
+        console.error('Ошибка при копировании: ', err);
+        alert('Не удалось скопировать команду. Скопируйте вручную: ' + text);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Закрытие модального окна при клике вне его
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('connectionModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    }
+    
+    initCardCopy();
+    
+    // Закрытие модального окна по клавише ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+
+        }
+    });
+});
+
+function initCardCopy() {
+    const copyCardLink = document.querySelector('.copy-card');
+    const copyNotification = document.getElementById('copyNotification');
+    
+    if (!copyCardLink) return;
+    
+    // Определяем, мобильное ли устройство
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    copyCardLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const cardNumber = this.getAttribute('data-card');
+        const sberbankLink = this.getAttribute('data-sberbank');
+        
+        // Показываем уведомление о копировании
+        if (copyNotification) {
+            copyNotification.style.display = 'inline-block';
+            copyNotification.style.opacity = '1';
+            
+            // Скрываем уведомление через 2 секунды
+            setTimeout(() => {
+                copyNotification.style.opacity = '0';
+                setTimeout(() => {
+                    copyNotification.style.display = 'none';
+                }, 300);
+            }, 2000);
+        }
+        
+        // Копируем номер карты в буфер обмена
+        copyToClipboard(cardNumber);
+        
+        // Если это мобильное устройство, пытаемся открыть Сбербанк
+        if (isMobile) {
+            // Сначала пробуем открыть через deeplink
+            setTimeout(() => {
+                window.location.href = sberbankLink;
+                
+                // Если deeplink не сработал, открываем обычную ссылку через 500мс
+                setTimeout(() => {
+                    window.open('https://online.sberbank.ru', '_blank');
+                }, 500);
+            }, 100);
+        }
+        
+        // Визуальная обратная связь
+        this.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        setTimeout(() => {
+            this.style.backgroundColor = '';
+        }, 300);
+    });
+}
+
+// Функция для копирования в буфер обмена
+function copyToClipboard(text) {
+    // Создаем временный элемент textarea
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-999999px';
+    textarea.style.top = '-999999px';
+    document.body.appendChild(textarea);
+    
+    // Выделяем и копируем текст
+    textarea.focus();
+    textarea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        console.log(successful ? 'Номер карты скопирован' : 'Не удалось скопировать');
+    } catch (err) {
+        console.error('Ошибка при копировании:', err);
+        
+        // Альтернативный метод для современных браузеров
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('Номер карты скопирован через Clipboard API');
+            }).catch(err => {
+                console.error('Ошибка Clipboard API:', err);
+            });
+        }
+    }
+    
+    // Удаляем временный элемент
+    document.body.removeChild(textarea);
+}
+
+
+// Экспортируем функции в глобальную область видимости
+window.connectToServer = connectToServer;
+window.copyConnectCommand = copyConnectCommand;
+window.closeModal = closeModal;
+window.showConnectionModal = showConnectionModal;
 })();
