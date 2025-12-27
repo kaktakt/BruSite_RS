@@ -1,3 +1,4 @@
+
 :root {
     --glass-bg: rgba(255, 255, 255, 0.09);
     --panel-bg: rgba(0, 0, 0, 0.35);
@@ -818,3 +819,102 @@ footer {
         z-index: 100;
     }
 }
+
+
+/* Секретная вкладка */
+.tab.secret-tab {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    animation: secretGlow 2s ease-in-out infinite;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.tab.secret-tab:hover {
+    background: rgba(255, 215, 0, 0.25);
+    color: #fff;
+    box-shadow: 
+        0 0 15px rgba(255, 215, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 215, 0, 0.5);
+}
+
+.tab.secret-tab.active {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 215, 0, 0.3),
+        rgba(255, 215, 0, 0.15)
+    );
+    color: #fff;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 215, 0, 0.5),
+        inset 0 0 20px rgba(255, 215, 0, 0.4),
+        0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Анимация свечения для секретной вкладки */
+@keyframes secretGlow {
+    0% {
+        box-shadow: 
+            inset 0 0 0 1px rgba(255, 215, 0, 0.3),
+            0 0 5px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 
+            inset 0 0 0 1px rgba(255, 215, 0, 0.6),
+            0 0 15px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+        box-shadow: 
+            inset 0 0 0 1px rgba(255, 215, 0, 0.3),
+            0 0 5px rgba(255, 215, 0, 0.3);
+    }
+}
+
+/* Контент секретной вкладки */
+.secret-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.secret-content.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Элементы в секретной вкладке */
+.secret-content .item {
+    background: linear-gradient(180deg, rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.02));
+    border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.secret-content h1 {
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Анимация для появления секретной вкладки */
+@keyframes secretTabAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.tab.secret-tab {
+    animation: secretTabAppear 0.3s ease forwards;
+}
+
+/* Для тач-устройств */
+@media (hover: none) and (pointer: coarse) {
+    .tab.secret-tab {
+        animation: none;
+        min-height: 44px;
+    }
+}
+
