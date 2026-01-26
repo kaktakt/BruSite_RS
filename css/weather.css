@@ -1,0 +1,851 @@
+/* weather.css - Стильный компактный погодный виджет с анимацией раскрытия */
+/* Контейнер для погодных эффектов */
+.weather-effects-container {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* ===== ОСНОВНЫЕ АНИМАЦИИ ===== */
+@keyframes fall {
+    0% {
+        transform: translateY(-20px) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(20px);
+        opacity: 0;
+    }
+}
+
+@keyframes snowFall {
+    0% {
+        transform: translateY(-20px) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(var(--sway-distance, 0));
+        opacity: 0;
+    }
+}
+
+@keyframes sway {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(var(--sway-distance, 50px));
+    }
+}
+
+@keyframes fogFloat {
+    0% {
+        transform: translateX(-100px) translateY(0);
+        opacity: 0.1;
+    }
+    25% {
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(100px) translateY(-50px);
+        opacity: 0.2;
+    }
+    75% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateX(-100px) translateY(-100px);
+        opacity: 0.1;
+    }
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+/* Изменено: только плавное появление без движения */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.85;
+    }
+}
+
+/* Изменено: только плавное исчезновение без движения */
+@keyframes fadeOut {
+    from {
+        opacity: 0.85;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.9;
+    }
+}
+
+/* Изменено: без движения */
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Изменено: без трансформации */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 200px;
+    }
+}
+
+/* Изменено: без трансформации */
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        max-height: 200px;
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+    }
+}
+
+/* ===== ПОГОДНЫЕ ЭФФЕКТЫ ===== */
+.weather-effect {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+/* Дождь */
+.rain-drop {
+    background: linear-gradient(to bottom, rgba(100, 150, 255, 0.8), rgba(100, 150, 255, 0.3));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: fall linear infinite;
+}
+
+/* Морось */
+.drizzle-drop {
+    background: linear-gradient(to bottom, rgba(150, 180, 255, 0.6), rgba(150, 180, 255, 0.2));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: fall linear infinite;
+}
+
+/* Снег */
+.snowflake {
+    background: white;
+    border-radius: 50%;
+    filter: blur(0.5px);
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+    animation: snowFall linear infinite, sway ease-in-out infinite alternate;
+}
+
+/* Туман */
+.fog-particle {
+    background: linear-gradient(90deg, rgba(200, 200, 200, 0.1), rgba(230, 230, 230, 0.2));
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: fogFloat linear infinite;
+}
+
+/* Звезды */
+.star {
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.3);
+    animation: twinkle ease-in-out infinite alternate;
+}
+
+/* ===== КОМПАКТНЫЙ СТИЛЬНЫЙ ВИДЖЕТ ===== */
+/* ИЗМЕНЕНО: Адаптивная ширина вместо фиксированной */
+.weather-info {
+    position: fixed !important;
+    top: 28px !important;
+    right: 20px !important;
+    z-index: 10001 !important;
+    background: rgba(0, 0, 0, 0.623) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(20, 20, 20, 0.712) !important;
+    border-radius: 16px !important;
+    padding: 12px 16px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif !important;
+    animation: fadeIn 1s ease 1.1s forwards !important;
+    pointer-events: auto !important;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.623),
+        0 1px 2px rgba(255, 255, 255, 0.05) inset !important;
+    opacity: 0 !important;
+    transform: translateY(-20px) !important;
+    /* ИЗМЕНЕНО: Вместо фиксированной ширины используем адаптивную */
+    width: auto !important;
+    min-width: 200px !important; /* Минимальная ширина */
+    max-width: 320px !important; /* Максимальная ширина */
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    height: auto !important;
+    min-height: 56px !important;
+}
+
+/* Анимация скрытия при убирании курсора */
+.weather-info.fade-out {
+    animation: fadeOut 0.5s ease forwards !important;
+    opacity: 0 !important;
+}
+
+.weather-info.appearing {
+    opacity: 0.85 !important;
+    transform: translateY(0) !important;
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out !important;
+}
+
+.weather-info.updating {
+    opacity: 0.7 !important;
+    background: rgba(0, 0, 0, 0.623) !important;
+}
+
+.weather-info:hover {
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.623) !important;
+    border-color: rgba(20, 20, 20, 0.712) !important;
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        0 1px 2px rgba(255, 255, 255, 0.08) inset !important;
+    transform: translateY(0) !important;
+}
+
+.weather-info-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100%;
+    flex-shrink: 0 !important;
+    gap: 12px !important;
+    height: 32px !important;
+}
+
+.weather-icon {
+    font-size: 18px !important;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    opacity: 0.95;
+    flex-shrink: 0;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+    flex: 0 0 32px !important;
+}
+
+.weather-icon.offline {
+    background: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.weather-data {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+    flex-grow: 1;
+    min-width: 0; /* Важно для корректной работы text-overflow */
+    justify-content: center !important;
+    height: 100% !important;
+}
+
+.weather-main-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+    height: 18px !important;
+    gap: 10px !important; /* Добавлен отступ между описанием и температурой */
+}
+
+.weather-temp {
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1 !important;
+    letter-spacing: -0.2px;
+    text-align: right !important;
+    flex-shrink: 0 !important;
+    /* ИЗМЕНЕНО: Уменьшена минимальная ширина для температуры */
+    min-width: 45px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    height: 100% !important;
+    white-space: nowrap; /* Предотвращает перенос температуры */
+}
+
+.weather-temp.offline {
+    color: rgba(255, 255, 255, 0.9) !important;
+    opacity: 0.95;
+}
+
+/* ИЗМЕНЕНО: Удалено ограничение max-width для описания погоды */
+.weather-desc {
+    opacity: 0.85 !important;
+    font-size: 11px !important;
+    text-transform: capitalize !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2 !important;
+    font-weight: 400;
+    flex-grow: 1;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    /* УДАЛЕНО: max-width: 150px; */
+}
+
+.weather-desc.offline {
+    opacity: 0.85 !important;
+    text-transform: none !important;
+    font-style: italic;
+}
+
+.weather-location {
+    font-size: 10px !important;
+    opacity: 0.6 !important;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 400;
+    letter-spacing: 0.1px;
+    height: 12px !important;
+    margin-top: 1px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.weather-update-indicator {
+    display: inline-block !important;
+    width: 3px !important;
+    height: 3px !important;
+    border-radius: 50% !important;
+    background: rgba(180, 180, 180, 0.5) !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+    position: static !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+
+.weather-update-indicator.active {
+    animation: pulse 1.5s ease-in-out infinite !important;
+    background: rgb(255, 255, 255) !important;
+}
+
+.weather-update-indicator.offline {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+.weather-update-indicator.offline.active {
+    animation: pulse 1.5s ease-in-out infinite !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.weather-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    padding-top: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 0 solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+}
+
+.weather-info:hover .weather-details {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top-width: 1px;
+    animation: slideDown 0.3s ease forwards;
+}
+
+.weather-info:not(:hover) .weather-details {
+    animation: slideUp 0.3s ease forwards;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 9px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    animation: contentFadeIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+.detail-row:nth-child(1) { animation-delay: 0.05s; }
+.detail-row:nth-child(2) { animation-delay: 0.1s; }
+.detail-row:nth-child(3) { animation-delay: 0.15s; }
+.detail-row:nth-child(4) { animation-delay: 0.2s; }
+.detail-row:nth-child(5) { animation-delay: 0.25s; }
+
+.detail-row:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detail-label {
+    opacity: 0.65;
+    font-weight: 400;
+    font-size: 10px;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #fff;
+    font-size: 10px;
+}
+
+.detail-label.offline,
+.detail-value.offline {
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.last-update {
+    font-size: 9px;
+    opacity: 0.5;
+    margin-top: 10px;
+    text-align: center;
+    font-style: italic;
+    letter-spacing: 0.2px;
+}
+
+.last-update.offline {
+    opacity: 0.4;
+    font-style: normal;
+}
+
+.offline-message {
+    font-size: 9px;
+    opacity: 0.7;
+    margin-top: 8px;
+    text-align: center;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+/* Для планшетов */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .weather-info {
+        top: 0px !important;
+        right: 16px !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        width: auto !important; /* ИЗМЕНЕНО */
+        min-width: 180px !important; /* ИЗМЕНЕНО */
+        max-width: 280px !important; /* ИЗМЕНЕНО */
+        border-radius: 14px !important;
+        min-height: 52px !important;
+        transform: translateY(-16px) !important;
+    }
+    
+    .weather-info.appearing {
+        transform: translateY(0) !important;
+    }
+    
+    .weather-info-content {
+        height: 30px !important;
+        gap: 10px !important;
+    }
+    
+    .weather-icon {
+        font-size: 16px !important;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        flex: 0 0 30px !important;
+    }
+    
+    .weather-main-row {
+        height: 16px !important;
+        gap: 8px !important; /* Добавлен отступ */
+    }
+    
+    .weather-temp {
+        font-size: 14px !important;
+        min-width: 40px !important; /* ИЗМЕНЕНО */
+    }
+    
+    .weather-desc {
+        font-size: 10px !important;
+        /* УДАЛЕНО: max-width: 130px; */
+    }
+    
+    .weather-location {
+        font-size: 9px !important;
+        height: 11px !important;
+    }
+    
+    .weather-update-indicator {
+        width: 2.5px !important;
+        height: 2.5px !important;
+    }
+    
+    .offline-message {
+        font-size: 8px;
+        padding: 3px 6px;
+    }
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .weather-info {
+        top: 0px !important;
+        right: 12px !important;
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        border-radius: 14px !important;
+        backdrop-filter: blur(15px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(180%) !important;
+        width: auto !important; /* ИЗМЕНЕНО */
+        min-width: 160px !important; /* ИЗМЕНЕНО */
+        max-width: 240px !important; /* ИЗМЕНЕНО */
+        transform: translateY(-12px) !important;
+        min-height: 50px !important;
+    }
+    
+    .weather-info.appearing {
+        transform: translateY(0) !important;
+    }
+    
+    .weather-info-content {
+        height: 28px !important;
+        gap: 10px !important;
+    }
+    
+    .weather-icon {
+        font-size: 15px !important;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        flex: 0 0 28px !important;
+    }
+    
+    .weather-main-row {
+        height: 15px !important;
+        gap: 8px !important; /* Добавлен отступ */
+    }
+    
+    .weather-temp {
+        font-size: 13px !important;
+        min-width: 38px !important; /* ИЗМЕНЕНО */
+    }
+    
+    .weather-desc {
+        font-size: 10px !important;
+        /* УДАЛЕНО: max-width: 120px; */
+    }
+    
+    .weather-details {
+        display: none !important;
+    }
+    
+    .weather-location {
+        font-size: 9px !important;
+        height: 10px !important;
+    }
+    
+    .weather-update-indicator {
+        width: 2.5px !important;
+        height: 2.5px !important;
+    }
+    
+    .offline-message {
+        font-size: 8px;
+        padding: 3px 6px;
+        margin-top: 6px;
+    }
+    
+    /* Уменьшаем интенсивность эффектов на мобильных */
+    .weather-effect {
+        opacity: 0.5;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+    .weather-info {
+        top: 0px !important;
+        right: 10px !important;
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        width: auto !important; /* ИЗМЕНЕНО */
+        min-width: 140px !important; /* ИЗМЕНЕНО */
+        max-width: 200px !important; /* ИЗМЕНЕНО */
+        border-radius: 12px !important;
+        transform: translateY(-10px) !important;
+        min-height: 46px !important;
+    }
+    
+    .weather-info.appearing {
+        transform: translateY(0) !important;
+    }
+    
+    .weather-info-content {
+        height: 26px !important;
+        gap: 8px !important;
+    }
+    
+    .weather-icon {
+        font-size: 13px !important;
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        flex: 0 0 24px !important;
+    }
+    
+    .weather-main-row {
+        height: 14px !important;
+        gap: 6px !important; /* Добавлен отступ */
+    }
+    
+    .weather-temp {
+        font-size: 12px !important;
+        min-width: 35px !important; /* ИЗМЕНЕНО */
+    }
+    
+    .weather-desc {
+        display: none !important;
+    }
+    
+    .weather-location {
+        font-size: 8px !important;
+        height: 9px !important;
+    }
+    
+    .weather-update-indicator {
+        width: 2px !important;
+        height: 2px !important;
+    }
+    
+    .offline-message {
+        font-size: 7px;
+        padding: 2px 4px;
+        margin-top: 4px;
+    }
+}
+
+/* Для больших экранов */
+@media (min-width: 1920px) {
+    .weather-info {
+        top: 0px !important;
+        right: 24px !important;
+        padding: 14px 18px !important;
+        font-size: 14px !important;
+        width: auto !important; /* ИЗМЕНЕНО */
+        min-width: 220px !important; /* ИЗМЕНЕНО */
+        max-width: 350px !important; /* ИЗМЕНЕНО */
+        border-radius: 18px !important;
+        transform: translateY(-24px) !important;
+        min-height: 60px !important;
+    }
+    
+    .weather-info.appearing {
+        transform: translateY(0) !important;
+    }
+    
+    .weather-info-content {
+        height: 34px !important;
+    }
+    
+    .weather-icon {
+        font-size: 20px !important;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        flex: 0 0 36px !important;
+    }
+    
+    .weather-main-row {
+        height: 20px !important;
+        gap: 12px !important; /* Добавлен отступ */
+    }
+    
+    .weather-temp {
+        font-size: 17px !important;
+        min-width: 50px !important; /* ИЗМЕНЕНО */
+    }
+    
+    .weather-desc {
+        font-size: 12px !important;
+        /* УДАЛЕНО: max-width: 170px; */
+    }
+    
+    .weather-location {
+        font-size: 11px !important;
+        height: 13px !important;
+    }
+    
+    .weather-update-indicator {
+        width: 3.5px !important;
+        height: 3.5px !important;
+    }
+    
+    .offline-message {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+}
+
+/* ===== ТЕМНЫЙ/СВЕТЛЫЙ РЕЖИМ ===== */
+/* Светлая тема */
+@media (prefers-color-scheme: light) {
+    .weather-info {
+        background: rgba(255, 255, 255, 0.85) !important;
+        color: rgba(0, 0, 0, 0.9) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.15),
+            0 1px 2px rgba(255, 255, 255, 0.1) inset !important;
+    }
+    
+    .weather-info:hover {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .weather-details {
+        border-top: 0 solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .weather-info:hover .weather-details {
+        border-top-width: 1px;
+    }
+    
+    .detail-row {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    
+    .weather-temp {
+        color: rgba(0, 0, 0, 0.95) !important;
+    }
+    
+    .weather-update-indicator {
+        background: rgba(0, 0, 0, 0.25) !important;
+    }
+    
+    .weather-update-indicator.active {
+        background: rgba(76, 175, 80, 0.7) !important;
+    }
+    
+    .weather-icon {
+        background: rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .weather-temp.offline {
+        color: rgba(0, 0, 0, 0.9) !important;
+    }
+    
+    .weather-update-indicator.offline {
+        background: rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .weather-update-indicator.offline.active {
+        background: rgba(76, 175, 80, 0.5) !important;
+    }
+    
+    .offline-message {
+        color: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Режим уменьшения движения */
+@media (prefers-reduced-motion: reduce) {
+    .weather-effect,
+    .weather-info,
+    .weather-details {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .rain-drop,
+    .drizzle-drop,
+    .snowflake,
+    .fog-particle,
+    .star {
+        animation: none !important;
+        opacity: 0.3 !important;
+    }
+    
+    .weather-details {
+        max-height: none !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
+    
+    .weather-update-indicator.active {
+        animation: none !important;
+    }
+    
+    .weather-info {
+        transform: translateY(0) !important;
+        opacity: 0.85 !important;
+    }
+}
