@@ -1,4 +1,3 @@
-// main.js - оптимизированная версия с плавными переходами между вкладками (1.2 секунды)
 (function() {
     'use strict';
     
@@ -356,139 +355,82 @@
         }
     }
     
-    // Копирование команды connect для IP сервера
-    function initIPCopy() {
-        const copyIpBtn = document.querySelector('.copy-ip');
-        if (!copyIpBtn) return;
+    // Копирование номера карты
 
-        copyIpBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const ip = '194.93.2.151:27015';
-            const command = `connect ${ip}`;
-            
-            copyToClipboard(command).then(() => {
-                // Визуальная обратная связь
-                const originalHTML = this.innerHTML;
-                this.innerHTML = `
-                    <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                `;
-                this.style.color = '#4CAF50';
+    // Копирование номера карты и USDT адреса с уведомлением
+    function initCardCopy() {
+        const copyCardLinks = document.querySelectorAll('.copy-card');
+        
+        copyCardLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const cardNumber = this.getAttribute('data-card');
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                // Создаем динамическое уведомление
+                const notification = document.createElement('div');
+                notification.className = 'copy-notification-inline';
+                notification.textContent = 'Скопировано';
+                
+                // Находим ближайший блок .meta для вставки уведомления
+                const metaBlock = this.parentElement;
+                
+                if (metaBlock) {
+                    // Вставляем уведомление после ссылки
+                    metaBlock.appendChild(notification);
+                    
+                    // Показываем уведомление
+                    setTimeout(() => {
+                        notification.style.opacity = '1';
+                        
+                        // Виброотклик для мобильных устройств
+                        if ('vibrate' in navigator && isMobile) {
+                            navigator.vibrate(30);
+                        }
+                    }, 10);
+                    
+                    // Копируем текст в буфер обмена
+                    copyToClipboard(cardNumber).catch(err => {
+                        console.error('Ошибка копирования:', err);
+                        notification.textContent = '✗ Ошибка!';
+                        notification.style.color = '#ff4444';
+                    });
+                    
+                    // Скрываем уведомление через 1.5 секунды
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        }, 300);
+                    }, 1500);
+                }
+                
+                // Визуальная обратная связь для кнопки
+                this.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
                 
                 setTimeout(() => {
-                    this.innerHTML = originalHTML;
-                    this.style.color = '';
-                }, 2000);
-            }).catch(err => {
-                console.error('Ошибка копирования: ', err);
-                alert('Не удалось скопировать команду. Скопируйте вручную: ' + command);
+                    this.style.backgroundColor = '';
+                }, 300);
+                
+                // Если есть ссылка на Сбербанк и это мобильное устройство
+                const sberbankLink = this.getAttribute('data-sberbank');
+                if (isMobile && sberbankLink) {
+                    setTimeout(() => {
+                        window.location.href = sberbankLink;
+                        setTimeout(() => {
+                            window.open('https://online.sberbank.ru', '_blank');
+                        }, 500);
+                    }, 100);
+                }
             });
         });
     }
     
-    // Копирование номера карты
-    function initCardCopy() {
-        const copyCardLink = document.querySelector('.copy-card');
-        const copyCardBtn = document.querySelector('.copy-card-btn');
-        
-        if (!copyCardLink || !copyCardBtn) return;
-
-        // Функция для копирования карты
-        const copyCard = (e) => {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            const cardNumber = copyCardLink.getAttribute('data-card');
-            
-            // На мобильных устройствах пытаемся открыть банковское приложение
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-                // Пробуем разные схемы для популярных банковских приложений
-                const bankSchemes = [
-                    `bank100000000000://transfer?card=${cardNumber}`,
-                    `sberbank://transfer?card=${cardNumber}`,
-                    `tinkoff://transfer?card=${cardNumber}`,
-                    `alfabank://transfer?card=${cardNumber}`,
-                    `vtb://transfer?card=${cardNumber}`
-                ];
-                
-                let appOpened = false;
-                for (const scheme of bankSchemes) {
-                    try {
-                        window.location.href = scheme;
-                        appOpened = true;
-                        setTimeout(() => {
-                            if (document.hidden) {
-                                // Приложение открылось, выходим
-                                return;
-                            }
-                        }, 100);
-                        break;
-                    } catch (e) {
-                        // Продолжаем пробовать следующую схему
-                    }
-                }
-                
-                // Если не удалось открыть приложение, просто копируем
-                setTimeout(() => {
-                    if (!appOpened || !document.hidden) {
-                        copyToClipboard(cardNumber).then(() => {
-                            // Визуальная обратная связь для кнопки
-                            const originalHTML = copyCardBtn.innerHTML;
-                            copyCardBtn.innerHTML = `
-                                <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            `;
-                            copyCardBtn.style.color = '#4CAF50';
-                            
-                            setTimeout(() => {
-                                copyCardBtn.innerHTML = originalHTML;
-                                copyCardBtn.style.color = '';
-                            }, 2000);
-                        }).catch(() => {
-                            alert('Номер карты: ' + cardNumber);
-                        });
-                    }
-                }, 300);
-            } else {
-                // На десктопе просто копируем
-                copyToClipboard(cardNumber).then(() => {
-                    // Визуальная обратная связь для кнопки
-                    const originalHTML = copyCardBtn.innerHTML;
-                    copyCardBtn.innerHTML = `
-                        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    `;
-                    copyCardBtn.style.color = '#4CAF50';
-                    
-                    setTimeout(() => {
-                        copyCardBtn.innerHTML = originalHTML;
-                        copyCardBtn.style.color = '';
-                    }, 2000);
-                }).catch(() => {
-                    alert('Номер карты: ' + cardNumber);
-                });
-            }
-        };
-
-        // Обработчик для кнопки копирования
-        copyCardBtn.addEventListener('click', copyCard);
-
-        // Обработчик для самой ссылки с номером карты
-        copyCardLink.addEventListener('click', copyCard);
-    }
-    
-    // Инициализация кнопок копирования
+    // Инициализация копирования
     function initCopyButtons() {
-        initIPCopy();
         initCardCopy();
     }
     
@@ -512,228 +454,7 @@
         // Инициализируем кнопки копирования
         initCopyButtons();
         
-        console.log('Main script initialized successfully with 1.2s smooth tab transitions');
+        console.log('Main script initialized successfully');
     });
     
-    // Экспортируем утилиты
-    window.utils = utils;
-
-// Функции для подключения к серверу CS 1.6
-function connectToServer(e) {
-    e.preventDefault();
-    const connectBtn = e.target;
-    const originalText = connectBtn.textContent;
-    
-    // Изменяем текст кнопки
-    connectBtn.textContent = 'Подключение...';
-    connectBtn.style.opacity = '0.7';
-    connectBtn.style.cursor = 'wait';
-    
-    // Пытаемся открыть ссылку steam://
-    const steamUrl = connectBtn.href;
-    
-    // Создаем временную ссылку для открытия протокола
-    const tempLink = document.createElement('a');
-    tempLink.href = steamUrl;
-    tempLink.style.display = 'none';
-    document.body.appendChild(tempLink);
-    
-    // Пытаемся открыть ссылку
-    tempLink.click();
-    
-    // Удаляем временную ссылку
-    setTimeout(() => {
-        document.body.removeChild(tempLink);
-    }, 100);
-    
-    // Проверяем, было ли открытие успешным
-    setTimeout(() => {
-        // Показываем инструкцию через 2 секунды (на случай если не открылось)
-        showConnectionModal();
-        
-        // Восстанавливаем кнопку через 3 секунды
-        setTimeout(() => {
-            connectBtn.textContent = originalText;
-            connectBtn.style.opacity = '1';
-            connectBtn.style.cursor = 'pointer';
-        }, 3000);
-    }, 2000);
-}
-
-// Функция показа модального окна с инструкцией
-function showConnectionModal() {
-    const modal = document.getElementById('connectionModal');
-    if (modal) {
-        modal.classList.add('active');
-        
-        // Автоматическое закрытие через 15 секунд
-        setTimeout(() => {
-            closeModal();
-        }, 15000);
-    }
-}
-
-// Функция закрытия модального окна
-function closeModal() {
-    const modal = document.getElementById('connectionModal');
-    if (modal) {
-        modal.classList.remove('active');
-    }
-}
-
-// Функция копирования команды подключения
-function copyConnectCommand() {
-    const command = 'connect 194.93.2.151:27015';
-    
-    // Используем Clipboard API если доступен
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(command).then(() => {
-            alert('Команда скопирована в буфер обмена! Вставьте её в консоль CS 1.6.');
-            closeModal();
-        }).catch(err => {
-            fallbackCopyText(command);
-        });
-    } else {
-        fallbackCopyText(command);
-    }
-}
-
-// Фолбэк метод копирования для старых браузеров
-function fallbackCopyText(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.left = "-999999px";
-    textArea.style.top = "-999999px";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-        document.execCommand('copy');
-        alert('Команда скопирована в буфер обмена! Вставьте её в консоль CS 1.6.');
-        closeModal();
-    } catch (err) {
-        console.error('Ошибка при копировании: ', err);
-        alert('Не удалось скопировать команду. Скопируйте вручную: ' + text);
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-// Закрытие модального окна при клике вне его
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('connectionModal');
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-    }
-    
-    initCardCopy();
-    
-    // Закрытие модального окна по клавише ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal();
-
-        }
-    });
-});
-
-function initCardCopy() {
-    const copyCardLink = document.querySelector('.copy-card');
-    const copyNotification = document.getElementById('copyNotification');
-    
-    if (!copyCardLink) return;
-    
-    // Определяем, мобильное ли устройство
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    copyCardLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const cardNumber = this.getAttribute('data-card');
-        const sberbankLink = this.getAttribute('data-sberbank');
-        
-        // Показываем уведомление о копировании
-        if (copyNotification) {
-            copyNotification.style.display = 'inline-block';
-            copyNotification.style.opacity = '1';
-            
-            // Скрываем уведомление через 2 секунды
-            setTimeout(() => {
-                copyNotification.style.opacity = '0';
-                setTimeout(() => {
-                    copyNotification.style.display = 'none';
-                }, 300);
-            }, 2000);
-        }
-        
-        // Копируем номер карты в буфер обмена
-        copyToClipboard(cardNumber);
-        
-        // Если это мобильное устройство, пытаемся открыть Сбербанк
-        if (isMobile) {
-            // Сначала пробуем открыть через deeplink
-            setTimeout(() => {
-                window.location.href = sberbankLink;
-                
-                // Если deeplink не сработал, открываем обычную ссылку через 500мс
-                setTimeout(() => {
-                    window.open('https://online.sberbank.ru', '_blank');
-                }, 500);
-            }, 100);
-        }
-        
-        // Визуальная обратная связь
-        this.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-        setTimeout(() => {
-            this.style.backgroundColor = '';
-        }, 300);
-    });
-}
-
-// Функция для копирования в буфер обмена
-function copyToClipboard(text) {
-    // Создаем временный элемент textarea
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-999999px';
-    textarea.style.top = '-999999px';
-    document.body.appendChild(textarea);
-    
-    // Выделяем и копируем текст
-    textarea.focus();
-    textarea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        console.log(successful ? 'Номер карты скопирован' : 'Не удалось скопировать');
-    } catch (err) {
-        console.error('Ошибка при копировании:', err);
-        
-        // Альтернативный метод для современных браузеров
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-                console.log('Номер карты скопирован через Clipboard API');
-            }).catch(err => {
-                console.error('Ошибка Clipboard API:', err);
-            });
-        }
-    }
-    
-    // Удаляем временный элемент
-    document.body.removeChild(textarea);
-}
-
-
-// Экспортируем функции в глобальную область видимости
-window.connectToServer = connectToServer;
-window.copyConnectCommand = copyConnectCommand;
-window.closeModal = closeModal;
-window.showConnectionModal = showConnectionModal;
 })();
