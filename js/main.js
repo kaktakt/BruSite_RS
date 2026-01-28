@@ -39,6 +39,16 @@
                            window.setTimeout(callback, 1000 / 60);
                        };
             })();
+        },
+        
+        // Генератор случайных ярких цветов
+        getRandomColor() {
+            const colors = [
+                '#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0',
+                '#118AB2', '#EF476F', '#7209B7', '#F15BB5',
+                '#00BBF9', '#00F5D4', '#FB5607', '#8338EC'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
     };
     
@@ -224,14 +234,15 @@
         }
         
         handleKeyPress(e) {
-            if (!['ArrowLeft', 'ArrowRight', '1', '2', '3', '4'].includes(e.key)) return;
+            if (!['ArrowLeft', 'ArrowRight', '1', '2', '3', '4', '5'].includes(e.key)) return;
             
             // Цифровые клавиши для быстрого переключения
             const keyMap = {
                 '1': 0, // Ссылки
                 '2': 1, // Конфиг
-                '3': 2, // Проект
-                '4': 3  // Донат
+                '3': 2, // CS 1.6
+                '4': 3, // BRUS (новый индекс)
+                '5': 4  // донат
             };
             
             let nextIndex;
@@ -355,62 +366,100 @@
         }
     }
     
-    // Копирование номера карты
-
     // Копирование номера карты и USDT адреса с уведомлением
     function initCardCopy() {
         const copyCardLinks = document.querySelectorAll('.copy-card');
         
+        // Храним активные уведомления для каждой кнопки
+        const activeNotifications = new Map();
+        
         copyCardLinks.forEach(link => {
+            let notification = null;
+            let hideTimeout = null;
+            
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 const cardNumber = this.getAttribute('data-card');
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
-                // Создаем динамическое уведомление
-                const notification = document.createElement('div');
-                notification.className = 'copy-notification-inline';
-                notification.textContent = 'Скопировано';
-                
-                // Находим ближайший блок .meta для вставки уведомления
-                const metaBlock = this.parentElement;
-                
-                if (metaBlock) {
-                    // Вставляем уведомление после ссылки
-                    metaBlock.appendChild(notification);
+                // Проверяем, есть ли уже активное уведомление для этой кнопки
+                if (activeNotifications.has(this)) {
+                    notification = activeNotifications.get(this);
                     
-                    // Показываем уведомление
+                    // Меняем цвет уведомления на случайный
+                    const randomColor = utils.getRandomColor();
+                    notification.style.color = randomColor;
+                    notification.style.textShadow = 
+                        `0 0 5px ${randomColor}, 0 0 10px ${randomColor}80, 0 0 15px ${randomColor}40`;
+                    
+                    // Добавляем класс для анимации
+                    notification.classList.add('color-change');
+                    
+                    // Убираем класс анимации через 300ms
                     setTimeout(() => {
-                        notification.style.opacity = '1';
+                        notification.classList.remove('color-change');
+                    }, 300);
+                    
+                    // Сбрасываем таймер скрытия
+                    clearTimeout(hideTimeout);
+                } else {
+                    // Создаем новое уведомление
+                    notification = document.createElement('div');
+                    notification.className = 'copy-notification-inline';
+                    notification.textContent = 'Скопировано';
+                    
+                    // Начальный цвет
+                    notification.style.color = '#ffffff';
+                    notification.style.textShadow = 
+                        '0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3)';
+                    
+                    // Находим ближайший блок .meta для вставки уведомления
+                    const metaBlock = this.parentElement;
+                    
+                    if (metaBlock) {
+                        // Вставляем уведомление после ссылки
+                        metaBlock.appendChild(notification);
                         
-                        // Виброотклик для мобильных устройств
-                        if ('vibrate' in navigator && isMobile) {
-                            navigator.vibrate(30);
-                        }
-                    }, 10);
-                    
-                    // Копируем текст в буфер обмена
-                    copyToClipboard(cardNumber).catch(err => {
-                        console.error('Ошибка копирования:', err);
-                        notification.textContent = '✗ Ошибка!';
-                        notification.style.color = '#ff4444';
-                    });
-                    
-                    // Скрываем уведомление через 1.5 секунды
-                    setTimeout(() => {
-                        notification.style.opacity = '0';
+                        // Сохраняем ссылку на уведомление
+                        activeNotifications.set(this, notification);
+                        
+                        // Показываем уведомление
                         setTimeout(() => {
-                            if (notification.parentNode) {
-                                notification.parentNode.removeChild(notification);
+                            notification.style.opacity = '1';
+                            
+                            // Виброотклик для мобильных устройств
+                            if ('vibrate' in navigator && isMobile) {
+                                navigator.vibrate(30);
                             }
-                        }, 300);
-                    }, 1500);
+                        }, 10);
+                    }
                 }
+                
+                // Копируем текст в буфер обмена
+                copyToClipboard(cardNumber).catch(err => {
+                    console.error('Ошибка копирования:', err);
+                    notification.textContent = '✗ Ошибка!';
+                    notification.style.color = '#ff4444';
+                    notification.style.textShadow = 
+                        '0 0 5px rgba(255, 68, 68, 0.5), 0 0 10px rgba(255, 68, 68, 0.3)';
+                });
+                
+                // Устанавливаем таймер для скрытия уведомления
+                hideTimeout = setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        if (notification && notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                        // Удаляем уведомление из Map
+                        activeNotifications.delete(this);
+                        notification = null;
+                    }, 300);
+                }, 1500);
                 
                 // Визуальная обратная связь для кнопки
                 this.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                
                 setTimeout(() => {
                     this.style.backgroundColor = '';
                 }, 300);
