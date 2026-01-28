@@ -861,3 +861,64 @@ footer {
         bottom: 70px;
     }
 }
+
+/* Анимация изменения цвета уведомления */
+@keyframes colorChange {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.copy-notification-inline {
+    display: inline-block;
+    margin-left: 8px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    pointer-events: none;
+    position: relative;
+    text-shadow: 
+        0 0 5px rgba(255, 255, 255, 0.5),
+        0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Эффект при изменении цвета */
+.copy-notification-inline.color-change {
+    animation: colorChange 0.3s ease;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .copy-notification-inline {
+        position: fixed;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        font-size: 14px;
+        white-space: nowrap;
+        z-index: 10000;
+        text-shadow: 
+            0 0 8px rgba(255, 255, 255, 0.7),
+            0 0 15px rgba(255, 255, 255, 0.5),
+            0 0 20px rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Для устройств с тач-экраном */
+@media (hover: none) and (pointer: coarse) {
+    .copy-notification-inline {
+        font-size: 13px;
+        bottom: 70px;
+    }
+}
